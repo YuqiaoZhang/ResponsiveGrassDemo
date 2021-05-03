@@ -4,14 +4,32 @@
 */
 
 #include "SceneObject.h"
-#include "physx/foundation/PxMat44.h"
-#include "glm/gtc/type_ptr.hpp"
+#ifndef NDEBUG
+#define NDEBUG 1
+#ifdef _DEBUG
+#undef _DEBUG
+#include <foundation/PxMat44.h>
+#define _DEBUG 1
+#else
+#include <foundation/PxMat44.h>
+#endif
+#undef NDEBUG
+#else
+#ifdef _DEBUG
+#undef _DEBUG
+#include <foundation/PxMat44.h>
+#define _DEBUG 1
+#else
+#include <foundation/PxMat44.h>
+#endif
+#endif
+#include <glm/gtc/type_ptr.hpp>
 #include "PhysXController.h"
 #include "OpenGLState.h"
 #include "BoundingBox.h"
 #include "BoundingSphere.h"
 
-#include "glm/gtc/matrix_transform.hpp"
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <iostream>
 
@@ -49,7 +67,7 @@ void SceneObject::update(const Camera& cam, const Clock& time)
 		visible = bounds->isVisible(cam, modelMatrix);
 	}
 
-	for each (SceneObject* child in children)
+	for (SceneObject* child : children)
 	{
 		child->update(cam, time);
 		visible |= child->isVisible();
@@ -122,7 +140,7 @@ void SceneObject::draw(const Camera& cam)
 			}*/
 		}
 	
-		for each (SceneObject* child in children)
+		for (SceneObject* child : children)
 		{
 			child->parentDraw(modelMatrix);
 		}
@@ -148,7 +166,7 @@ void SceneObject::parentDraw(glm::mat4& parentMatrix)
 			}
 		}
 
-		for each (SceneObject* child in children)
+		for (SceneObject* child : children)
 		{
 			child->parentDraw(matrix);
 		}
@@ -502,7 +520,7 @@ void createSphereGeometry(std::vector<glm::vec3>& positions, std::vector<glm::ve
 	normals.push_back(glm::normalize(glm::vec3(-t, 0.0f, -1.0f)));
 	normals.push_back(glm::normalize(glm::vec3(-t, 0.0f, 1.0f)));
 
-	for each (glm::vec3 pos in positions)
+	for (glm::vec3 pos : positions)
 	{
 		uv.push_back(calcSphereUV(pos));
 	}
@@ -967,7 +985,7 @@ SceneObjectGeometry::~SceneObjectGeometry()
 		delete boundingObject;
 	}
 
-	for each(SceneObjectGeometry* child in childGeometries)
+	for (SceneObjectGeometry* child : childGeometries)
 	{
 		delete child;
 	}
@@ -1146,7 +1164,7 @@ void SceneObjectGeometry::draw(GLenum drawMode, glm::mat4& modelMatrix, Shader* 
 		glBindVertexArray(0);
 	}
 
-	for each (SceneObjectGeometry* c in childGeometries)
+	for (SceneObjectGeometry* c : childGeometries)
 	{
 		c->draw(drawMode, matrix, drawShader);
 	}
@@ -1184,7 +1202,7 @@ bool isPointInPolyhedron(const glm::vec3& point, const std::vector<TriangleFace>
 
 	std::vector<PointSide> trianglePointsFound;
 
-	for each(TriangleFace f in faces)
+	for (TriangleFace f : faces)
 	{
 		glm::dvec3 normal = glm::dvec3(f.normal);
 		glm::dvec3 vert1 = glm::dvec3(f.vertices[0]) * s;
@@ -1299,7 +1317,7 @@ bool isPointInPolyhedron(const glm::vec3& point, const std::vector<TriangleFace>
 
 		if (inside)
 		{
-			for each (PointSide tpf in trianglePointsFound)
+			for (PointSide tpf : trianglePointsFound)
 			{
 				if (glm::distance(tpf.point, p) < epsilon)
 				{

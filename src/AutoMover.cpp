@@ -5,7 +5,7 @@
 
 #include "AutoMover.h"
 
-#include "glm/gtx/transform.hpp"
+#include <glm/gtx/transform.hpp>
 
 AutoMover::AutoMover(SceneObject& obj, const double delay, const double speed, const std::vector<glm::vec3>& points, bool loop) : AutoTransformer(obj, delay), s(speed), p(points), nextPoint(0), curPoint(0), maxTime(1.0f), timeLeft(0.0f), loop(loop), finished(false)
 {
@@ -14,7 +14,8 @@ AutoMover::AutoMover(SceneObject& obj, const double delay, const double speed, c
 		p.push_back(glm::vec3(0.0f, 0.0f, 0.0f));
 	}
 	rotation = glm::mat4(glm::mat3(obj.getTransform()));
-	obj.setPosition(glm::translate(glm::mat4(1.0f), p[0]) * rotation);
+	glm::mat4 position = glm::translate(glm::mat4(1.0f), p[0]) * rotation;
+	obj.setPosition(position);
 }
 
 AutoMover::~AutoMover()
@@ -57,6 +58,7 @@ void AutoMover::update(const Clock& time)
 		}
 		
 		rotation = glm::mat4(glm::mat3(obj.getTransform()));
-		obj.setPosition(glm::translate(glm::mat4(1.0f), pos) * rotation);
+		glm::mat4 position = glm::translate(glm::mat4(1.0f), pos) * rotation;
+		obj.setPosition(position);
 	}
 }

@@ -26,12 +26,12 @@ HeightMap::HeightMap(const std::string& fileName, const std::string& fileName_no
 		}
 		else
 		{
-			unsigned int width = png.info_ptr->width;
-			unsigned int height = png.info_ptr->height;
+			unsigned int width = png.width;
+			unsigned int height = png.height;
 
 			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-			if (png.info_ptr->channels == 3)
+			if (png.channels == 3)
 			{
 				unsigned char* data = new unsigned char[width * height * 2];
 
@@ -56,12 +56,12 @@ HeightMap::HeightMap(const std::string& fileName, const std::string& fileName_no
 					}
 					else
 					{
-						unsigned int width = png.info_ptr->width;
-						unsigned int height = png.info_ptr->height;
+						unsigned int width = png.width;
+						unsigned int height = png.height;
 
 						glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-						if (png.info_ptr->channels == 3)
+						if (png.channels == 3)
 						{
 							normalMap = new Texture2D(GL_RGB, GL_RGB, false, false, width, height, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR, GL_UNSIGNED_BYTE, 0);
 							normalMap->BufferImage(width, height, GL_UNSIGNED_BYTE, png.image_data);

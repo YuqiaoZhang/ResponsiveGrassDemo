@@ -14,10 +14,13 @@
 
 #define DEBUG true
 
-#include "GL\glew.h"
-#define GLM_FORCE_RADIANS
-#define GLM_SWIZZLE
-#include "glm\glm.hpp"
+#include <GL/glew.h>
+
+#define GLM_FORCE_RADIANS 1
+#define GLM_SWIZZLE 1
+//glm/detail/setup.hpp
+//#define GLM_HAS_ANONYMOUS_UNION 1
+#include <glm/glm.hpp>
 
 #define MS_SAMPLES 8
 
@@ -43,9 +46,11 @@ void fetchGLError();
 
 glm::vec3 closestPointOnTriangle(const glm::vec3& v1, const glm::vec3& v2, const glm::vec3& v3, const glm::vec3& sourcePosition, float& s, float& t);
 
+#if defined(_MSC_VER) && defined(_WIN32)
 inline float random()
 {
 	return ((float)rand() / (RAND_MAX));
 }
+#endif
 
 #endif

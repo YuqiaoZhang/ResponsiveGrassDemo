@@ -7,7 +7,25 @@
 #define SCENE_OBJECT_H
 
 #include "Common.h"
-#include "physx/PxRigidDynamic.h"
+#ifndef NDEBUG
+#define NDEBUG 1
+#ifdef _DEBUG
+#undef _DEBUG
+#include <PxRigidDynamic.h>
+#define _DEBUG 1
+#else
+#include <PxRigidDynamic.h>
+#endif
+#undef NDEBUG
+#else
+#ifdef _DEBUG
+#undef _DEBUG
+#include <PxRigidDynamic.h>
+#define _DEBUG 1
+#else
+#include <PxRigidDynamic.h>
+#endif
+#endif
 #include "Shader.h"
 #include "Camera.h"
 #include "Texture2D.h"

@@ -6,8 +6,9 @@
 #include <iostream>
 #include <sstream>
 
-#include "GL\glew.h"
-#include "GLFW\glfw3.h"
+#include <GL/glew.h>
+
+#include <GLFW/glfw3.h>
 
 #include "Common.h"
 
@@ -170,8 +171,11 @@ int main(void)
 
 	glfwWindowHint(GLFW_DEPTH_BITS, 16);
 	glfwWindowHint(GLFW_SAMPLES, MS_SAMPLES);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-#if _DEBUG
+#ifndef NDEBUG
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 #endif
 
@@ -196,7 +200,7 @@ int main(void)
 	glfwSetKeyCallback(window, window_key_callback);
 
 	glfwMakeContextCurrent(window);
-	glfwSwapInterval(0);
+	glfwSwapInterval(1);
 
 	glfwGetFramebufferSize(window, &width, &height);
 	reshape(window, width, height);
@@ -210,12 +214,13 @@ int main(void)
 	{
 		std::cout << "Failed initialize glew\n";
 	}
+
 	glGetError();
 
 	std::string glVersion = std::string((const char*)glGetString(GL_VERSION));
 	std::cout << "OpenGL Contex Version " << glVersion << std::endl;
 
-#if _DEBUG
+#ifndef NDEBUG
 	glDebugMessageCallback((GLDEBUGPROC)DebugCallback, 0);
 	OpenGLState::Instance().enable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 #endif
@@ -232,5 +237,5 @@ int main(void)
 
 	glfwTerminate();
 
-	system("pause");
+	return 0;
 }

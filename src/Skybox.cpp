@@ -29,18 +29,18 @@ Skybox::Skybox(const std::string& filename)
 
 	for (GLuint i = 0; i < (GLuint)out.size(); i++)
 	{
-		if (out[i].info_ptr->channels == 3)
+		if (out[i].channels == 3)
 		{
 			glTexImage2D(
 				GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-				0, GL_RGB, out[i].info_ptr->width, out[i].info_ptr->height, 0, GL_RGB, GL_UNSIGNED_BYTE, out[i].image_data
+				0, GL_RGB, out[i].width, out[i].height, 0, GL_RGB, GL_UNSIGNED_BYTE, out[i].image_data
 				);
 		}
 		else
 		{
 			glTexImage2D(
 				GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-				0, GL_RGBA, out[i].info_ptr->width, out[i].info_ptr->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, out[i].image_data
+				0, GL_RGBA, out[i].width, out[i].height, 0, GL_RGBA, GL_UNSIGNED_BYTE, out[i].image_data
 				);
 		}
 	}

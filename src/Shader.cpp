@@ -7,7 +7,7 @@
 #include <iostream>
 #include <fstream>
 
-#include "glm\gtc\type_ptr.hpp"
+#include <glm/gtc/type_ptr.hpp>
 
 #include "OpenGLState.h"
 
@@ -746,7 +746,7 @@ void Shader::setUniform(const std::string& name, const std::vector<GLboolean>& v
 			{
 				std::vector<GLuint> values;
 
-				for each (GLboolean b in value)
+				for (GLboolean b : value)
 				{
 					values.push_back(b ? 1 : 0);
 				}

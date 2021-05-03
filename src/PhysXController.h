@@ -6,7 +6,25 @@
 #ifndef PHYSXCONTROLLER_H
 #define PHYSXCONTROLLER_H
 
-#include "physx/PxPhysicsAPI.h"
+#ifndef NDEBUG
+#define NDEBUG 1
+#ifdef _DEBUG
+#undef _DEBUG
+#include "PxPhysicsAPI.h"
+#define _DEBUG 1
+#else
+#include "PxPhysicsAPI.h"
+#endif
+#undef NDEBUG
+#else
+#ifdef _DEBUG
+#undef _DEBUG
+#include "PxPhysicsAPI.h"
+#define _DEBUG 1
+#else
+#include "PxPhysicsAPI.h"
+#endif
+#endif
 #include <vector>
 #include "HeightMap.h"
 #include "Geometry.h"
@@ -53,8 +71,9 @@ public:
 private:
 	PxDefaultAllocator gAllocator;
 	PxDefaultErrorCallback gErrorCallback;
-	PxFoundation* gFoundation;
-	PxPhysics* gPhysics;
+	PxFoundation *gFoundation;
+	PxPhysics *gPhysics;
+	PxCooking *gCooking;
 	PxDefaultCpuDispatcher*	gDispatcher;
 	PxScene* gScene;
 

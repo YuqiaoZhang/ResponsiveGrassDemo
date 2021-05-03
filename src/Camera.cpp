@@ -6,7 +6,7 @@
 #include "Camera.h"
 #include "SceneObject.h"
 
-#include "glm\gtc\matrix_transform.hpp"
+#include <glm/gtc/matrix_transform.hpp>
 
 Camera::Camera(const float _fov, const float _width, const float _height, const float _near, const float _far, const glm::vec3& _startingPosition)
 : position(_startingPosition), viewVector(), horizontalAngle(PI_F), verticalAngle(0.0f), fov(_fov), aspectRatio(_width / _height), near(_near), far(_far), width(_width), height(_height), transformed(true), vAdd(0.0f), hAdd(0.0f), parentObject(0), parentOffset(0.0f), inheritParentRotation(true)

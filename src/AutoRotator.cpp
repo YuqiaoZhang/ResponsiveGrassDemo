@@ -26,6 +26,7 @@ void AutoRotator::update(const Clock& time)
 
 		t += time.LastFrameTime();
 
-		obj.setPosition(glm::rotate(obj.getTransform(), s * (float)time.LastFrameTime(), axis));
+		glm::mat4 position = glm::rotate(obj.getTransform(), s * (float)time.LastFrameTime(), axis);
+		obj.setPosition(position);
 	}
 }

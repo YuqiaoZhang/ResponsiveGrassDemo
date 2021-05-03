@@ -5,6 +5,7 @@
 
 #include "SpherePacker.h"
 #include <iostream>
+#include <algorithm>
 
 /**
  * Helper Functions
@@ -66,7 +67,7 @@ void UpdateVoxelData(const unsigned int dMin, const unsigned int dMax, const uns
 
 				float nearestDist = glm::distance(gPos, voxelNearest);
 				bool updated = false;
-				for each(glm::vec4 sphere in newSpheres)
+				for (glm::vec4 sphere : newSpheres)
 				{
 					glm::vec3 spherePos = glm::vec3(sphere);
 					float dist = glm::distance(gPos, spherePos) - sphere.w;
@@ -97,7 +98,7 @@ void UpdateVoxelData(const unsigned int dMin, const unsigned int dMax, const uns
 void searchForOuterSphere(const unsigned int idx, const float fac, const std::vector<glm::vec4>& spheres, const std::vector<Geometry::TriangleFace>& faces, bool* isOuterArray)
 {
 	glm::vec4 sphere = spheres[idx];
-	for each(Geometry::TriangleFace f in faces)
+	for (Geometry::TriangleFace f : faces)
 	{
 		float s, t;
 		glm::vec3 cp = closestPointOnTriangle(f.vertices[0].position, f.vertices[1].position, f.vertices[2].position, sphere.xyz, s, t);
@@ -112,7 +113,7 @@ void searchForOuterSphere(const unsigned int idx, const float fac, const std::ve
 
 bool intersect(const glm::vec4& s, const std::vector<glm::vec4>& ls)
 {
-	for each(glm::vec4 sphere in ls)
+	for (glm::vec4 sphere : ls)
 	{
 		if (glm::distance(glm::vec3(s), glm::vec3(sphere)) < s.w + sphere.w)
 		{
@@ -187,9 +188,9 @@ std::vector<glm::vec4> SpherePacker::packSpheres(const std::vector<Geometry::Tri
 	glGenTextures(1, &gridTex);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_3D, gridTex);
-	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB32F, width, height, depth, 0, GL_RGB, GL_FLOAT, voxelData);
@@ -261,7 +262,7 @@ std::vector<glm::vec4> SpherePacker::packSpheres(const std::vector<Geometry::Tri
 		for (unsigned int s = 0; s < potentialSpheres.size(); s++)
 		{
 			glm::vec4 sphere = potentialSpheres[s];
-			if (isfinite(sphere.w) && !intersect(sphere, spheres))
+			if (std::isfinite(sphere.w) && !intersect(sphere, spheres))
 			{
 				newSpheres.push_back(sphere);
 				spheres.push_back(sphere);

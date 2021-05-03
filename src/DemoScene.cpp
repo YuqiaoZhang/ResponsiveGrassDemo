@@ -14,8 +14,7 @@
 
 #include <iostream>
 
-#include <sys\stat.h>
-#include <direct.h>
+#include <sys/stat.h>
 
 //Helper Functions declared here, defined at the end of file
 void createHeightField(PhysXController& physic, const HeightMap& heightMap, const SceneObject& object, const glm::vec2 objectSizeXZ, PxRigidStatic*& heightFieldActor);
@@ -95,7 +94,7 @@ DemoScene::DemoScene(GLFWwindow* _window, unsigned int _width, unsigned int _hei
 	glGenVertexArrays(1, &ppvao);
 
 	//PP Shader
-	postprocessShader = new Shader(SHADERPATH + "Misc/Postprocess");
+	postprocessShader = new Shader(SHADERPATH + "Misc/PostProcess");
 
 	//FBO Setup
 	glGenFramebuffers(1, &fbo);
@@ -190,7 +189,7 @@ void DemoScene::execute()
 
 		unsigned int visibleObjects = 0;
 
-		for each (SceneObject* obj in sceneObjects)
+		for (SceneObject* obj : sceneObjects)
 		{
 			obj->update(*cam,time);
 
@@ -205,7 +204,7 @@ void DemoScene::execute()
 			}
 		}
 
-		for each (SceneObject* obj in balls)
+		for (SceneObject* obj : balls)
 		{
 			obj->update(*cam, time);
 
@@ -222,7 +221,7 @@ void DemoScene::execute()
 			colliderList.push_back(glm::vec4(glm::vec3(obj->getTransform() * glm::vec4(0.0f,0.0f,0.0f,1.0f)), obj->getGeometryScale().x));
 		}
 
-		for each (GrassObject* obj in grassObjects)
+		for (GrassObject* obj : grassObjects)
 		{
 			obj->update(*cam, time);
 
@@ -236,7 +235,7 @@ void DemoScene::execute()
 			}
 		}
 
-		for each(SpherePackedObject* obj in spherePackedObjects)
+		for (SpherePackedObject* obj : spherePackedObjects)
 		{
 			obj->update(*cam, time);
 			if (obj->isVisible())
@@ -246,7 +245,7 @@ void DemoScene::execute()
 
 			glm::mat4 mm = obj->getTransform();
 			bool maxfound = false;
-			for each(glm::vec4 s in obj->spheres)
+			for (glm::vec4 s : obj->spheres)
 			{
 				if (s.w > 0.5f)
 				{
@@ -267,32 +266,32 @@ void DemoScene::execute()
 			OpenGLState::Instance().toggleWireframe();
 			GLenum wirebuffer[2] = { GL_NONE, GL_COLOR_ATTACHMENT1 };
 			glDrawBuffers(2, wirebuffer);
-			for each (SceneObject* obj in sceneObjects)	{ obj->draw(*cam); }
-			for each (SceneObject* obj in balls) { obj->draw(*cam); }
-			for each (GrassObject* obj in grassObjects)	{ obj->draw(*cam); }
-			for each (SpherePackedObject* obj in spherePackedObjects)	{ obj->draw(*cam); }
+			for (SceneObject* obj : sceneObjects)	{ obj->draw(*cam); }
+			for (SceneObject* obj : balls) { obj->draw(*cam); }
+			for (GrassObject* obj : grassObjects)	{ obj->draw(*cam); }
+			for (SpherePackedObject* obj : spherePackedObjects)	{ obj->draw(*cam); }
 
 			OpenGLState::Instance().toggleWireframe();
 			glDrawBuffer(GL_COLOR_ATTACHMENT0);
 			glClear(GL_DEPTH_BUFFER_BIT);
 		}
 
-		for each (SceneObject* obj in sceneObjects)
+		for (SceneObject* obj : sceneObjects)
 		{
 			obj->draw(*cam);
 		}
 
-		for each (SceneObject* obj in balls)
+		for (SceneObject* obj : balls)
 		{
 			obj->draw(*cam);
 		}
 
-		for each (GrassObject* obj in grassObjects)
+		for (GrassObject* obj : grassObjects)
 		{
 			obj->draw(*cam);
 		}
 
-		for each (SpherePackedObject* obj in spherePackedObjects)
+		for (SpherePackedObject* obj : spherePackedObjects)
 		{
 			obj->draw(*cam);
 		}
@@ -300,12 +299,12 @@ void DemoScene::execute()
 		///////////////////////////////////////////////////////
 		///////////////////////////////////////////////////////
 		//glDrawBuffer(GL_COLOR_ATTACHMENT0);
-		for each(Grass* g in grassFields)
+		for (Grass* g : grassFields)
 		{
 			g->Draw((float)time.LastFrameTime(), *cam);
 		}
 
-		for each (GrassObject* obj in grassObjects)
+		for (GrassObject* obj : grassObjects)
 		{
 			obj->drawGrass(*cam, time);
 		}
@@ -467,27 +466,33 @@ void DemoScene::checkKeys(GLFWwindow* window)
 	{
 		if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
 		{
-			spherePackedObjects[0]->setPosition(glm::translate(spherePackedObjects[0]->getTransform(), glm::vec3(s, 0.0f, 0.0f) * (float)time.LastFrameTime()));
+			glm::mat4x4 position = glm::translate(spherePackedObjects[0]->getTransform(), glm::vec3(s, 0.0f, 0.0f) * (float)time.LastFrameTime());
+			spherePackedObjects[0]->setPosition(position);
 		}
 		if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
 		{
-			spherePackedObjects[0]->setPosition(glm::translate(spherePackedObjects[0]->getTransform(), glm::vec3(-s, 0.0f, 0.0f) * (float)time.LastFrameTime()));
+			glm::mat4x4 position = glm::translate(spherePackedObjects[0]->getTransform(), glm::vec3(-s, 0.0f, 0.0f) * (float)time.LastFrameTime());
+			spherePackedObjects[0]->setPosition(position);
 		}
 		if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
 		{
-			spherePackedObjects[0]->setPosition(glm::translate(spherePackedObjects[0]->getTransform(), glm::vec3(0.0f, s, 0.0f) * (float)time.LastFrameTime()));
+			glm::mat4x4 position = glm::translate(spherePackedObjects[0]->getTransform(), glm::vec3(0.0f, s, 0.0f) * (float)time.LastFrameTime());
+			spherePackedObjects[0]->setPosition(position);
 		}
 		if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
 		{
-			spherePackedObjects[0]->setPosition(glm::translate(spherePackedObjects[0]->getTransform(), glm::vec3(0.0f, -s, 0.0f) * (float)time.LastFrameTime()));
+			glm::mat4x4 position = glm::translate(spherePackedObjects[0]->getTransform(), glm::vec3(0.0f, -s, 0.0f) * (float)time.LastFrameTime());
+			spherePackedObjects[0]->setPosition(position);
 		}
 		if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS)
 		{
-			spherePackedObjects[0]->setPosition(glm::translate(spherePackedObjects[0]->getTransform(), glm::vec3(0.0f, 0.0f, s) * (float)time.LastFrameTime()));
+			glm::mat4x4 position = glm::translate(spherePackedObjects[0]->getTransform(), glm::vec3(0.0f, 0.0f, s) * (float)time.LastFrameTime());
+			spherePackedObjects[0]->setPosition(position);
 		}
 		if (glfwGetKey(window, GLFW_KEY_6) == GLFW_PRESS)
 		{
-			spherePackedObjects[0]->setPosition(glm::translate(spherePackedObjects[0]->getTransform(), glm::vec3(0.0f, 0.0f, -s) * (float)time.LastFrameTime()));
+			glm::mat4x4 position = glm::translate(spherePackedObjects[0]->getTransform(), glm::vec3(0.0f, 0.0f, -s) * (float)time.LastFrameTime());
+			spherePackedObjects[0]->setPosition(position);
 		}
 	}
 }
@@ -600,7 +605,7 @@ void DemoScene::key_callback(GLFWwindow* window, int key, int scancode, int acti
 
 	if (key == GLFW_KEY_TAB && action == GLFW_PRESS)
 	{
-		for each(SpherePackedObject* s in spherePackedObjects)
+		for (SpherePackedObject* s : spherePackedObjects)
 		{
 			s->drawObject = !s->drawObject;
 		}
@@ -749,7 +754,8 @@ void createHeightField(PhysXController& physic, const HeightMap& heightMap, cons
 {
 	physx::PxHeightField* heightField = physic.createHeightField(heightMap);
 	physx::PxMaterial* heightFieldMaterial = physic.createMaterial(0.5f, 0.5f, 0.6f);
-	physx::PxTransform matrix(PxMat44((float *)&glm::translate(object.getTransform(), glm::vec3(-objectSizeXZ.x * 0.5f, 0.0f, -objectSizeXZ.y * 0.5f))));
+	glm::mat4x4 matrix_glm = glm::translate(object.getTransform(), glm::vec3(-objectSizeXZ.x * 0.5f, 0.0f, -objectSizeXZ.y * 0.5f));
+	physx::PxTransform matrix(PxMat44((float *)&matrix_glm));
 	heightFieldActor = physic.createStatic(matrix);
 	physx::PxReal rowScale = objectSizeXZ.x / (heightMap.Height());
 	physx::PxReal columnScale = objectSizeXZ.y / (heightMap.Width());
@@ -761,7 +767,7 @@ void createHeightField(PhysXController& physic, const HeightMap& heightMap, cons
 void createHeightField(PhysXController& physic, const std::vector<Geometry::TriangleFace>& faces, const SceneObject& object, const glm::vec2 objectSizeXZ, PxRigidStatic*& heightFieldActor)
 {
 	float maxHeight = 0.0f;
-	for each(auto f in faces)
+	for (auto f : faces)
 	{
 		for (unsigned int i = 0; i < 3; i++)
 		{
@@ -771,7 +777,8 @@ void createHeightField(PhysXController& physic, const std::vector<Geometry::Tria
 
 	physx::PxHeightField* heightField = physic.createHeightField(faces, maxHeight);
 	physx::PxMaterial* heightFieldMaterial = physic.createMaterial(0.5f, 0.5f, 0.6f);
-	physx::PxTransform matrix(PxMat44((float *)&glm::translate(object.getTransform(), glm::vec3(-objectSizeXZ.x * 0.5f, 0.0f, -objectSizeXZ.y * 0.5f))));
+	glm::mat4x4 matrx_glm = glm::translate(object.getTransform(), glm::vec3(-objectSizeXZ.x * 0.5f, 0.0f, -objectSizeXZ.y * 0.5f));
+	physx::PxTransform matrix(PxMat44((float *)&matrx_glm));
 	heightFieldActor = physic.createStatic(matrix);
 	physx::PxReal rowScale = objectSizeXZ.x / (float)(heightField->getNbRows());
 	physx::PxReal columnScale = objectSizeXZ.y / (float)(heightField->getNbColumns());

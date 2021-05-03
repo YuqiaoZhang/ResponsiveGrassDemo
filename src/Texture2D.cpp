@@ -129,12 +129,12 @@ Texture2D* Texture2D::loadTextureFromFile(const std::string& fileName, const boo
 			return 0;
 		}
 
-		unsigned int width = png.info_ptr->width;
-		unsigned int height = png.info_ptr->height;
+		unsigned int width = png.width;
+		unsigned int height = png.height;
 
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-		if (png.info_ptr->channels == 4)
+		if (png.channels == 4)
 		{
 			Texture2D* ptr = new Texture2D(gammaCorrection ? GL_SRGB_ALPHA : GL_RGBA, GL_RGBA, _generateMipMaps, _enableMultisampling, width, height, _wrapX, _wrapY, _minFilter, _magFilter, GL_UNSIGNED_BYTE, png.image_data);
 			delete png.image_data;
@@ -142,7 +142,7 @@ Texture2D* Texture2D::loadTextureFromFile(const std::string& fileName, const boo
 		}
 		else
 		{
-			if (png.info_ptr->channels == 3)
+			if (png.channels == 3)
 			{
 				Texture2D* ptr = new Texture2D(gammaCorrection ? GL_SRGB : GL_RGB, GL_RGB, _generateMipMaps, _enableMultisampling, width, height, _wrapX, _wrapY, _minFilter, _magFilter, GL_UNSIGNED_BYTE, png.image_data);
 				delete png.image_data;
@@ -159,6 +159,21 @@ Texture2D* Texture2D::loadTextureFromFile(const std::string& fileName, const boo
 	{
 		std::cout << "ERROR: Texture file not found. " << fileName << std::endl;
 		return 0;
+	}
+}
+
+static void png_read_data(png_structp png_ptr, png_bytep data, png_size_t length)
+{
+	png_size_t check;
+
+	/* fread() returns 0 on error, so it is OK to store this in a png_size_t
+	 * instead of an int, which is what fread() actually returns.
+	 */
+	check = (png_size_t)fread(data, (png_size_t)1, length, (FILE*)png_get_io_ptr(png_ptr));
+
+	if (check != length)
+	{
+		png_error(png_ptr, "Read Error");
 	}
 }
 
@@ -200,7 +215,7 @@ Texture2D::PNGOutput Texture2D::loadPNGFile(const std::string& fileName, const b
 		return out;
 	}
 
-	png_init_io(png_ptr, _file);
+	png_set_read_fn(png_ptr, (png_voidp)_file, png_read_data);
 	png_set_sig_bytes(png_ptr, 8);
 	png_read_info(png_ptr, info_ptr);
 
@@ -264,5 +279,8 @@ Texture2D::PNGOutput Texture2D::loadPNGFile(const std::string& fileName, const b
 
 	out.image_data = image_data;
 	out.info_ptr = info_ptr;
+	out.width = width;
+	out.height = height;
+	out.channels = channels;
 	return out;
 }

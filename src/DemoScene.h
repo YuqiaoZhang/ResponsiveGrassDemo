@@ -7,7 +7,7 @@
 #define DemoScene_H
 
 #include "Common.h"
-#include "GLFW\glfw3.h"
+#include "GLFW/glfw3.h"
 #include "Clock.h"
 
 #include "Camera.h"

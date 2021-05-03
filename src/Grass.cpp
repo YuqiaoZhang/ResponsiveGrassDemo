@@ -11,7 +11,7 @@
 #include <thread>
 #include <queue>
 #include <fstream>
-#include "glm\gtc\matrix_transform.hpp"
+#include <glm/gtc/matrix_transform.hpp>
 #include "BoundingBox.h"
 #include "OpenGLState.h"
 #include "ThreadPool.h"
@@ -440,7 +440,7 @@ Grass::Grass() : overmind(&GrassOvermind::getInstance()), patches(), localGravit
 
 	if (pressureMap == 0)
 	{
-		pressureMap = new Texture2D(GL_RGBA32F, GL_RGB, false, false, GL_CLAMP, GL_CLAMP, GL_NEAREST, GL_NEAREST);
+		pressureMap = new Texture2D(GL_RGBA32F, GL_RGB, false, false, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
 	}
 }
 
@@ -499,7 +499,7 @@ void Grass::Initialize(const std::vector<GrassCreateBladeParams>& params, std::v
 	float xMax = -FLT_MAX;
 	float yMax = -FLT_MAX;
 	float zMax = -FLT_MAX;
-	for each(GrassPatchInfo p in patches)
+	for (GrassPatchInfo p : patches)
 	{
 		if (p.bounds != 0)
 		{
@@ -716,7 +716,7 @@ void Grass::DistributeFaceRandom(const GrassCreateBladeParams& p, std::vector <G
 				//Check for distances
 				bool valid = true;
 				auto listAdjacentClusters = grid.getCandidates(pos);
-				for each (glm::vec3 p in listAdjacentClusters)
+				for (glm::vec3 p : listAdjacentClusters)
 				{
 					if (glm::distance(p, pos) < curClusterDistance)
 					{
@@ -920,7 +920,7 @@ void Grass::DistributeFaceArea(const GrassCreateBladeParams& p, std::vector <Geo
 
 							bool valid = true;
 							auto listAdjacentClusters = grid.getCandidates(pos);
-							for each (glm::vec3 p in listAdjacentClusters)
+							for (glm::vec3 p : listAdjacentClusters)
 							{
 								if (glm::distance(p, pos) < curClusterDistance)
 								{
@@ -980,7 +980,7 @@ void Grass::DistributeFaceArea(const GrassCreateBladeParams& p, std::vector <Geo
 
 								bool valid = true;
 								auto listAdjacentClusters = grid.getCandidates(pos);
-								for each (glm::vec3 p in listAdjacentClusters)
+								for (glm::vec3 p : listAdjacentClusters)
 								{
 									if (glm::distance(p, pos) < curClusterDistance)
 									{
@@ -1256,7 +1256,7 @@ void Grass::GeneratePatches(std::vector<glm::vec4>& bladePositions, std::vector<
 			bool clusterWasSwapped = true;
 			std::vector<std::pair<unsigned int, float>> swapCandidateHelper;
 			swapCandidateHelper.reserve(bladesPerTile + 1);
-			ThreadPool pool = ThreadPool(8);
+			ThreadPool pool(8);
 			Clock whileTimeCount;
 			whileTimeCount.Tick();
 			while (iteration < 0 && clusterWasSwapped)
@@ -1717,7 +1717,7 @@ void Grass::UpdatePatchForce(const GrassPatchInfo& patch) const
 		collider.reserve(overmind->colliderList->size());
 
 		auto list = *(overmind->colliderList);
-		for each (glm::vec4 coll in list)
+		for (glm::vec4 coll : list)
 		{
 			if (patch.bounds != 0)
 			{

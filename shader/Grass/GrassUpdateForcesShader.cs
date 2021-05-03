@@ -1,4 +1,4 @@
-﻿/**
+/**
  * (c) Klemens Jahrmann
  * klemens.jahrmann@net1220.at
  */

@@ -4,7 +4,7 @@
 */
 
 #include "SpherePackedObject.h"
-#include "glm/gtx/transform.hpp"
+#include <glm/gtx/transform.hpp>
 #include "OpenGLState.h"
 #include "PhysXController.h"
 #include <fstream>

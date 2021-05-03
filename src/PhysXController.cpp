@@ -7,7 +7,7 @@
 #include <iostream>
 #include <algorithm>
 
-#define USE_PVD true
+#define USE_PVD 0
 
 PhysXController* PhysXController::instance = 0;
 
@@ -143,7 +143,7 @@ PxHeightField* PhysXController::createHeightField(const HeightMap& heightMap)
 	desc.samples.data = sampleData;
 	desc.samples.stride = sizeof(PxU32);
 
-	PxHeightField* hf = gPhysics->createHeightField(desc);
+	PxHeightField* hf = gCooking->createHeightField(desc, gPhysics->getPhysicsInsertionCallback());
 	delete sampleData;
 
 	return hf;
@@ -152,13 +152,13 @@ PxHeightField* PhysXController::createHeightField(const HeightMap& heightMap)
 PxHeightField* PhysXController::createHeightField(const std::vector<Geometry::TriangleFace>& faces, const float maxHeight)
 {
 	std::vector<glm::vec3> vertices;
-	for each (Geometry::TriangleFace f in faces)
+	for (Geometry::TriangleFace f : faces)
 	{
 		for (unsigned int i = 0; i < 3; i++)
 		{
 			auto v = f.vertices[i].position;
 			bool found = false;
-			for each (glm::vec3 vert in vertices)
+			for (glm::vec3 vert : vertices)
 			{
 				glm::vec2 rv = glm::vec2(glm::round(v.x), glm::round(v.z));
 				glm::vec2 rvert = glm::vec2(glm::round(vert.x), glm::round(vert.z));
@@ -255,7 +255,7 @@ PxHeightField* PhysXController::createHeightField(const std::vector<Geometry::Tr
 	desc.samples.data = sampleData;
 	desc.samples.stride = sizeof(PxU32);
 
-	PxHeightField* hf = gPhysics->createHeightField(desc);
+	PxHeightField* hf = gCooking->createHeightField(desc, gPhysics->getPhysicsInsertionCallback());
 	delete sampleData;
 
 	return hf;
@@ -269,9 +269,12 @@ void PhysXController::addStaticPlane(float nx, float ny, float nz, float distanc
 
 PhysXController::PhysXController()
 {
-	gFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, gAllocator, gErrorCallback);
-	PxProfileZoneManager* profileZoneManager = &PxProfileZoneManager::createProfileZoneManager(gFoundation);
-	gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *gFoundation, PxTolerancesScale(), true, profileZoneManager);
+	gFoundation = PxCreateFoundation(PX_FOUNDATION_VERSION, gAllocator, gErrorCallback);
+	PxPvd *pvd = PxCreatePvd(*gFoundation);
+	PxTolerancesScale scale;
+	gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *gFoundation, scale, true, pvd);
+	PxCookingParams cookingParams(scale);
+	gCooking = PxCreateCooking(PX_PHYSICS_VERSION, *gFoundation, cookingParams);
 
 	PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
 	sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
@@ -281,29 +284,26 @@ PhysXController::PhysXController()
 	sceneDesc.filterShader = PxDefaultSimulationFilterShader;
 	gScene = gPhysics->createScene(sceneDesc);
 
-#ifdef _DEBUG
-	if (USE_PVD)
-	{
-		profileZoneManager->addProfileZone(PxProfileZone::createProfileZone(gFoundation, "GraphicsTestV2"));
-		PxInitExtensions(*gPhysics);
+#if defined(USE_PVD) && USE_PVD
+	profileZoneManager->addProfileZone(PxProfileZone::createProfileZone(gFoundation, "GraphicsTestV2"));
+	PxInitExtensions(*gPhysics);
 
-		PxVisualDebuggerConnectionManager* pvd = gPhysics->getPvdConnectionManager();
-		if (!pvd)
-			return;
-		PxVisualDebuggerConnectionFlags theConnectionFlags(PxVisualDebuggerConnectionFlag::eDEBUG |
-			PxVisualDebuggerConnectionFlag::ePROFILE | PxVisualDebuggerConnectionFlag::eMEMORY);
-		auto con = PxVisualDebuggerExt::createConnection(pvd, "127.0.0.1", 5425, 10000, theConnectionFlags);
-		std::cout << "PVD is connected? " << std::to_string(pvd->isConnected())  << std::endl;
-		gPhysics->getVisualDebugger()->setVisualizeConstraints(true);
-		gPhysics->getVisualDebugger()->setVisualDebuggerFlag(PxVisualDebuggerFlag::eTRANSMIT_CONTACTS, true);
-		gPhysics->getVisualDebugger()->setVisualDebuggerFlag(PxVisualDebuggerFlag::eTRANSMIT_SCENEQUERIES, true);
-	}
+	PxVisualDebuggerConnectionManager *pvd = gPhysics->getPvdConnectionManager();
+	if (!pvd)
+		return;
+	PxVisualDebuggerConnectionFlags theConnectionFlags(PxVisualDebuggerConnectionFlag::eDEBUG |
+													   PxVisualDebuggerConnectionFlag::ePROFILE | PxVisualDebuggerConnectionFlag::eMEMORY);
+	auto con = PxVisualDebuggerExt::createConnection(pvd, "127.0.0.1", 5425, 10000, theConnectionFlags);
+	std::cout << "PVD is connected? " << std::to_string(pvd->isConnected()) << std::endl;
+	gPhysics->getVisualDebugger()->setVisualizeConstraints(true);
+	gPhysics->getVisualDebugger()->setVisualDebuggerFlag(PxVisualDebuggerFlag::eTRANSMIT_CONTACTS, true);
+	gPhysics->getVisualDebugger()->setVisualDebuggerFlag(PxVisualDebuggerFlag::eTRANSMIT_SCENEQUERIES, true);
 #endif
 }
 
 PhysXController::~PhysXController()
 {
-	for each(PxMaterial* m in materialList)
+	for (PxMaterial* m : materialList)
 	{
 		m->release();
 	}

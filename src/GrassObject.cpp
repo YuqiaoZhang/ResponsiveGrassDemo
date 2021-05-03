@@ -83,7 +83,7 @@ GrassObject::GrassObject(const std::string& filename, const SceneObjectGeometry:
 	attachGeometry(new SceneObjectGeometry(model, type, scale, false, false, 0, generatePhysicalObject, staticFriction, dynamicFriction, restitution, angularDamping, physicalDensity));
 
 	float maxBladeHeight = -FLT_MAX;
-	for each(auto p in params)
+	for (auto p : params)
 	{
 		maxBladeHeight = glm::max(maxBladeHeight, p.bladeMaxHeight);
 	}
@@ -107,7 +107,7 @@ GrassObject::GrassObject(const GrassObject& other, const std::vector<GrassCreate
 	bounds = geometry->getBoundingObject();
 
 	float maxBladeHeight = -FLT_MAX;
-	for each(auto p in params)
+	for (auto p : params)
 	{
 		maxBladeHeight = glm::max(maxBladeHeight, p.bladeMaxHeight);
 	}

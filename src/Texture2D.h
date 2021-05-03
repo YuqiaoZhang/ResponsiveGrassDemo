@@ -8,9 +8,7 @@
 
 #include "Common.h"
 #include <string>
-#include "libpng/png.h"
-#include "libpng/pngstruct.h"
-#include "libpng/pnginfo.h"
+#include <png.h>
 
 class Texture2D
 {
@@ -26,9 +24,12 @@ public:
 	struct PNGOutput {
 		unsigned char *image_data;
 		png_infop info_ptr;
+		png_uint_32 height;
+		png_uint_32 width;
+		int channels;
 	};
 
-	static Texture2D::PNGOutput Texture2D::loadPNGFile(const std::string& fileName, const bool gammaCorrection);
+	static Texture2D::PNGOutput loadPNGFile(const std::string& fileName, const bool gammaCorrection);
 
 public:
 	Texture2D(const GLenum _internalFormat, const GLenum _format, const bool _generateMipMaps, const bool _enableMultisampling, const GLint _wrapX, const GLint _wrapY, const GLint _minFilter, const GLint _magFilter);
